@@ -13,9 +13,8 @@
 #define digit3 A3
 #define digit4 A4
 
-int Min = 0 , Max = 9 , number=0;
-bool ledst = 0;
-int time;
+#define R_var A0
+
 void setup() {
   pinMode(segmentA, OUTPUT);
   pinMode(segmentB, OUTPUT);
@@ -29,40 +28,85 @@ void setup() {
   pinMode(digit2, OUTPUT);
   pinMode(digit3, OUTPUT);
   pinMode(digit4, OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 void loop() {
-  displayNumber(1,1);
-  displayNumber(2,2);
-  displayNumber(3,3);
-  displayNumber(4,4);
+  float sensorValue = analogRead(R_var);
+  float voltage = sensorValue * (10.0/1023);
+  int displayValue  = (int)(voltage*100.0);
+  digitalWrite(segmentDP, 0);
+  displayNumber(1,displayValue /1000);
+  digitalWrite(segmentDP, 1);
+  displayNumber(2,(displayValue/100) %10);
+  digitalWrite(segmentDP, 0);
+  displayNumber(3,(displayValue/10) %10);
+  digitalWrite(segmentDP, 0);
+  displayNumber(4,displayValue %10);
+  Serial.println(voltage);
 }
 
-void displayNumber(int Digit,int Number) {
-    digitalWrite(A1,0);
-    digitalWrite(A2,0);
-    digitalWrite(A3,0);
-    digitalWrite(A4,0);
-    displaySegment(Number);
+// void displayAll(int i, int j, int k, int l) {
+//   //int time = millis();
+//   //while (millis() - time <= Delay || Delay == 0) {
+//     displayNumber(1, i);
+//     displayNumber(2, j);
+//     displayNumber(3, k);
+//     displayNumber(4, l);
+//   //}
+// }
+
+void displayNumber(int Digit, int Number) {
+  displaySegment(Number);
   switch (Digit) {
-  case 1 :
-    digitalWrite(A1,1);
-    break;
-  case 2 :
-    digitalWrite(A2,1);
-    break;
-  case 3 :
-    digitalWrite(A3,1);
-    break;
-  case 4 :
-    digitalWrite(A4,1);
-    break;
+    case -1:
+      digitalWrite(A1, 0);
+      digitalWrite(A2, 0);
+      digitalWrite(A3, 0);
+      digitalWrite(A4, 0);
+      break;
+    case 1:
+      digitalWrite(A1, 1);
+      digitalWrite(A2, 0);
+      digitalWrite(A3, 0);
+      digitalWrite(A4, 0);
+      break;
+    case 2:
+      digitalWrite(A1, 0);
+      digitalWrite(A2, 1);
+      digitalWrite(A3, 0);
+      digitalWrite(A4, 0);
+      break;
+    case 3:
+      digitalWrite(A1, 0);
+      digitalWrite(A2, 0);
+      digitalWrite(A3, 1);
+      digitalWrite(A4, 0);
+      break;
+    case 4:
+      digitalWrite(A1, 0);
+      digitalWrite(A2, 0);
+      digitalWrite(A3, 0);
+      digitalWrite(A4, 1);
+      break;
   }
   delay(5);
 }
 
 void displaySegment(int numberToDisplay) {
   switch (numberToDisplay) {
+    default:
+      digitalWrite(segmentA, 0);
+      digitalWrite(segmentB, 0);
+      digitalWrite(segmentC, 0);
+      digitalWrite(segmentD, 0);
+      digitalWrite(segmentE, 0);
+      digitalWrite(segmentF, 0);
+      digitalWrite(segmentG, 0);
+      digitalWrite(A1, 0);
+      digitalWrite(A2, 0);
+      digitalWrite(A3, 0);
+      digitalWrite(A4, 0);
+      break;
     case 0:  // แสดงผลเลข 1
       digitalWrite(segmentA, 1);
       digitalWrite(segmentB, 1);

@@ -39,10 +39,6 @@ void loop() {
 }
 
 void displayNumber(int Digit,int Number) {
-    digitalWrite(A1,0);
-    digitalWrite(A2,0);
-    digitalWrite(A3,0);
-    digitalWrite(A4,0);
     displaySegment(Number);
   switch (Digit) {
   case 1 :
@@ -59,6 +55,10 @@ void displayNumber(int Digit,int Number) {
     break;
   }
   delay(5);
+    digitalWrite(A1,0);
+    digitalWrite(A2,0);
+    digitalWrite(A3,0);
+    digitalWrite(A4,0);
 }
 
 void displaySegment(int numberToDisplay) {
