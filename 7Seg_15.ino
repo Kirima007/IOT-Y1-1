@@ -34,12 +34,22 @@ void setup() {
   pinMode(digit4, OUTPUT);
   Serial.begin(115200);
 }
+float avg=0 , avg_temp=0;
+int i=0 ,time = millis();
 void loop() {
   float sample = analogRead(R_var);
   float R = R1 * (sample / (1023.0 - sample));
   float T = 1.0 / ((1.0 / T0) + (1.0 / B) * (log(R / R0)));
   T = T-273.15;
-  int displayValue = (int)(T*100.0);
+  if(millis()-time>=250){
+    avg_temp = avg/i;
+    i=0;
+    avg = 0;
+    time = millis();
+  }
+  i++;
+  avg += T;
+  int displayValue = (int)(avg_temp*100.0);
   digitalWrite(segmentDP, 0);
   displayNumber(1,displayValue /1000);
   digitalWrite(segmentDP, 1);
@@ -48,7 +58,7 @@ void loop() {
   displayNumber(3,(displayValue/10) %10);
   digitalWrite(segmentDP, 0);
   displayNumber(4,displayValue %10);
-  Serial.println(T);
+  Serial.println(avg_temp);
 }
 
 // void displayAll(int i, int j, int k, int l) {
