@@ -1,5 +1,8 @@
 #include <IRremote.hpp>    // Include the library
+#include "ArduinoGraphics.h"
+#include "Arduino_LED_Matrix.h"
 #define IR_RECEIVE_PIN 11  // IR receiver pin 11
+ArduinoLEDMatrix matrix;
 
 // 4 digit 7 segment display
 #define segmentA 6
@@ -16,7 +19,6 @@
 #define digit3 A3
 #define digit4 A4
 
-int value[] = { 0, 0, 0, 0 };
 
 void setup() {
   pinMode(segmentA, OUTPUT);
@@ -31,6 +33,7 @@ void setup() {
   pinMode(digit2, OUTPUT);
   pinMode(digit3, OUTPUT);
   pinMode(digit4, OUTPUT);
+  matrix.begin();
   //Serial.begin(115200);
   Serial.begin(9600);                                     // Message will be sent to PC
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);  // Start the receiver
@@ -38,28 +41,34 @@ void setup() {
 void loop() {
   if (IrReceiver.decode())  // Received IR signal
   {
+    matrix.beginDraw();
+    matrix.clear();
+    matrix.textFont(Font_4x6);
+    matrix.beginText(3,1,0xFFFFFF);
     switch (IrReceiver.decodedIRData.decodedRawData)  // Remote IR codes
     {
-      case 0xF807FF00: Serial.print("OK "); break;
-      case 0xB847FF00: Serial.print("LEFT "); break;
-      case 0xBF40FF00: Serial.print("RIGHT "); break;
-      case 0xF906FF00: Serial.print("FORWARD "); break;
-      case 0xBB44FF00: Serial.print("REVERSE "); break;
-      case 0xF609FF00: Serial.print("1 ");break;
-      case 0xE21DFF00: Serial.print("2 "); break;
-      case 0xE01FFF00: Serial.print("3 "); break;
-      case 0xA857FF00: Serial.print("4 "); break;
-      case 0xF20DFF00: Serial.print("5 "); break;
-      case 0xE619FF00: Serial.print("6 "); break;
-      case 0xE41BFF00: Serial.print("7 "); break;
-      case 0xBE41FF00: Serial.print("8 "); break;
-      case 0xEE11FF00: Serial.print("9 "); break;
-      case 0xEA15FF00: Serial.print("0 "); break;
+      case 0xF807FF00: Serial.print("OK "); matrix.print("OK"); break;
+      case 0xB847FF00: Serial.print("LEFT "); matrix.print("L"); break;
+      case 0xBF40FF00: Serial.print("RIGHT "); matrix.print("R"); break;
+      case 0xF906FF00: Serial.print("FORWARD "); matrix.print("F"); break;
+      case 0xBB44FF00: Serial.print("REVERSE "); matrix.print("R"); break;
+      case 0xF609FF00: Serial.print("1 "); matrix.print("1"); break;
+      case 0xE21DFF00: Serial.print("2 "); matrix.print("2"); break;
+      case 0xE01FFF00: Serial.print("3 "); matrix.print("3"); break;
+      case 0xA857FF00: Serial.print("4 "); matrix.print("4"); break;
+      case 0xF20DFF00: Serial.print("5 "); matrix.print("5"); break;
+      case 0xE619FF00: Serial.print("6 "); matrix.print("6"); break;
+      case 0xE41BFF00: Serial.print("7 "); matrix.print("7"); break;
+      case 0xBE41FF00: Serial.print("8 "); matrix.print("8"); break;
+      case 0xEE11FF00: Serial.print("9 "); matrix.print("9"); break;
+      case 0xEA15FF00: Serial.print("0 "); matrix.print("0"); break;
       case 0xFF42BD: Serial.print("* "); break;
       case 0xFF52AD: Serial.print("# "); break;
       case 0xB44BFF00: Serial.print("REPEAT "); break;
       default: Serial.print("other button ");
     }
+    matrix.endText();
+    matrix.endDraw();
     Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);  // Print raw data
 
     IrReceiver.resume();  // Enable receiving of the next value
@@ -69,8 +78,12 @@ void loop() {
   // displayNumber(4, (IrReceiver.decodedIRData.decodedRawData/0x0000FFFF)%0xF);
     displayNumber(1,(IrReceiver.decodedIRData.decodedRawData/0x0FFFFFFF)%16);
     displayNumber(2,(IrReceiver.decodedIRData.decodedRawData/0x00FFFFFF)%16);
-    displayNumber(3,(IrReceiver.decodedIRData.decodedRawData/0x000FFFFF)%16);
+    displayNumber(3,((IrReceiver.decodedIRData.decodedRawData/0x000FFFFF)%16));
     displayNumber(4,((IrReceiver.decodedIRData.decodedRawData/0x0000FFFF)%16)-1);
+}
+void displaymatrix(char t[4]){
+  
+  
 }
 void displayNumber(int Digit, int Number) {
   displaySegment(Number);
